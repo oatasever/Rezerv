@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezerve Alma Ekranı</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            margin: 0;
+            padding: 0 20px;
+        }
+        .search-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .search-button {
+            grid-column: 1 / -1;
+            justify-self: end;
+        }
+        .results-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto; /* Yatay kaydırma ekle */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed; /* Sütun genişliklerini sabitler */
+        }
+        th, td {
+            padding: 8px 10px; /* Padding'i azalt */
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px; /* Font boyutunu küçült */
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            height: 60px; /* Başlık yüksekliğini artır */
+            vertical-align: top; /* Başlık içeriğini üste hizala */
+            white-space: normal; /* Başlıkların alt satıra geçmesine izin ver */
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .editable-column {
+            background-color: #ffebee; /* Light red background for editable columns */
+        }
+        .editable-column input, .editable-column select {
+            border: 1px solid #e57373; /* Red border for input fields */
+            padding: 6px; /* Input padding'i azalt */
+            font-size: 13px; /* Input font boyutunu küçült */
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .reserve-btn {
+            background-color: #2ecc71;
+            padding: 15px 30px;
+            font-size: 16px;
+        }
+        .reserve-btn:hover {
+            background-color: #27ae60;
+        }
+        .checkbox-cell {
+            text-align: center;
+            width: 40px; /* Checkbox sütununu daralt */
+        }
+        .checkbox-cell input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+        .editable-indicator {
+            display: inline-block;
+            width: 8px; /* İndikatör boyutunu küçült */
+            height: 8px;
+            background-color: #e57373;
+            border-radius: 50%;
+            margin-left: 3px;
+            vertical-align: middle;
+        }
+        .column-header {
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Sütun genişliklerini ayarla */
+        th:nth-child(1), td:nth-child(1) { width: 70px; } /* Ürün Kodu */
+        th:nth-child(2), td:nth-child(2) { width: 80px; } /* Teslimat Kodu */
+        th:nth-child(3), td:nth-child(3) { width: 80px; } /* Satıcı Kodu */
+        th:nth-child(4), td:nth-child(4) { width: 120px; } /* Proje No */
+        th:nth-child(5), td:nth-child(5) { width: 80px; } /* Mevcut Rezerve Tarihi */
+        th:nth-child(6), td:nth-child(6) { width: 80px; } /* Mevcut Teslimat Tarihi */
+        th:nth-child(7), td:nth-child(7) { width: 60px; } /* Merkez Stok */
+        th:nth-child(8), td:nth-child(8) { width: 60px; } /* Rezervedeki Miktar */
+        th:nth-child(9), td:nth-child(9) { width: 60px; } /* Periyot Adeti */
+        th:nth-child(10), td:nth-child(10) { width: 80px; } /* Rezerve Alınacak Miktar */
+        th:nth-child(11), td:nth-child(11) { width: 100px; } /* Rezerve Alınacak Tarih */
+        th:nth-child(12), td:nth-child(12) { width: 100px; } /* Rezerve Alınma Sebebi */
+        th:nth-child(13), td:nth-child(13) { width: 40px; } /* Seç */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Rezerve Alma Ekranı</h1>
+    </header>
+
+    <div class="container">
+        <div class="search-section">
+            <h2>Ürün Arama</h2>
+            <div class="search-form">
+                <div class="form-group">
+                    <label for="teslimat-kodu">Teslimat Kodu</label>
+                    <input type="text" id="teslimat-kodu" placeholder="Teslimat kodu girin">
+                </div>
+                <div class="form-group">
+                    <label for="stok-kodu">Stok Kodu</label>
+                    <input type="text" id="stok-kodu" placeholder="Stok kodu girin">
+                </div>
+                <div class="form-group">
+                    <label for="satici-kodu">Satıcı Kodu</label>
+                    <input type="text" id="satici-kodu" placeholder="Satıcı kodu girin">
+                </div>
+                <div class="form-group">
+                    <label for="proje-no">Proje No</label>
+                    <input type="text" id="proje-no" placeholder="Proje no girin">
+                </div>
+                <div class="search-button">
+                    <button type="button" id="search-btn">Ara</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h2>Arama Sonuçları</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ürün<br>Kodu</th>
+                        <th>Teslimat<br>Kodu</th>
+                        <th>Satıcı<br>Kodu</th>
+                        <th>Proje<br>No</th>
+                        <th>Mevcut<br>Rezerve<br>Tarihi</th>
+                        <th>Mevcut<br>Teslimat<br>Tarihi</th>
+                        <th>Merkez<br>Stok</th>
+                        <th>Rezervedeki<br>Miktar</th>
+                        <th>Periyot<br>Adeti</th>
+                        <th class="editable-column">
+                            <div class="column-header">
+                                Rezerve<br>Alınacak<br>Miktar
+                                <span class="editable-indicator" title="Düzenlenebilir Alan"></span>
+                            </div>
+                        </th>
+                        <th class="editable-column">
+                            <div class="column-header">
+                                Rezerve<br>Alınacak<br>Tarih
+                                <span class="editable-indicator" title="Düzenlenebilir Alan"></span>
+                            </div>
+                        </th>
+                        <th class="editable-column">
+                            <div class="column-header">
+                                Rezerve<br>Alınma<br>Sebebi
+                                <span class="editable-indicator" title="Düzenlenebilir Alan"></span>
+                            </div>
+                        </th>
+                        <th>Seç</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>URN001</td>
+                        <td>S-202525</td>
+                        <td>RESUL DİP</td>
+                        <td>WEB-REZERVE-252525</td>
+                        <td>20.07.2025</td>
+                        <td>03.09.2025</td>
+                        <td>150</td>
+                        <td>0</td>
+                        <td class="periyot-adeti">50</td>
+                        <td class="editable-column">
+                            <input type="number" class="rezerve-miktar" value="50" min="1" max="50">
+                        </td>
+                        <td class="editable-column">
+                            <input type="date" value="2025-03-15">
+                        </td>
+                        <td class="editable-column">
+                            <select>
+                                <option value="">Seçiniz</option>
+                                <option value="musteri-talebi">Müşteri Talebi</option>
+                                <option value="stok-guvenligi">Stok Güvenliği</option>
+                                <option value="x-sebep">X Sebep</option>
+                                <option value="y-sebep">Y Sebep</option>
+                                <option value="diger">Diğer</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>URN002</td>
+                        <td>S-202526</td>
+                        <td>RESUL DİP</td>
+                        <td>WEB-REZERVE-252525</td>
+                        <td>20.08.2025</td>
+                        <td>04.10.2025</td>
+                        <td>75</td>
+                        <td>0</td>
+                        <td class="periyot-adeti">25</td>
+                        <td class="editable-column">
+                            <input type="number" class="rezerve-miktar" value="25" min="1" max="25">
+                        </td>
+                        <td class="editable-column">
+                            <input type="date" value="2025-03-15">
+                        </td>
+                        <td class="editable-column">
+                            <select>
+                                <option value="">Seçiniz</option>
+                                <option value="musteri-talebi">Müşteri Talebi</option>
+                                <option value="stok-guvenligi">Stok Güvenliği</option>
+                                <option value="x-sebep">X Sebep</option>
+                                <option value="y-sebep">Y Sebep</option>
+                                <option value="diger">Diğer</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="action-buttons">
+                <button class="reserve-btn">Rezerve Al</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde çalışacak kod
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tüm satırlar için rezerve miktarı sınırlaması ayarla
+            const rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const periyotAdeti = parseInt(row.querySelector('.periyot-adeti').textContent);
+                const rezerveMiktarInput = row.querySelector('.rezerve-miktar');
+
+                // Input'un max değerini periyot adetine eşitle
+                rezerveMiktarInput.setAttribute('max', periyotAdeti);
+
+                // Input değeri değiştiğinde kontrol et
+                rezerveMiktarInput.addEventListener('input', function() {
+                    // Eğer girilen değer periyot adetinden büyükse, periyot adetine eşitle
+                    if (parseInt(this.value) > periyotAdeti) {
+                        this.value = periyotAdeti;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
